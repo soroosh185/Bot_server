@@ -28,11 +28,6 @@ LICENSES = load_licenses()
 def generate_license():
     return '-'.join([''.join(random.choices(string.ascii_uppercase + string.digits, k=4)) for _ in range(4)])
 
-# **📌 صفحه اصلی برای تست در مرورگر**
-@app.route('/')
-def home():
-    return "🚀 سرور لایسنس فعال است و آماده کار می‌باشد!"
-
 # **📌 API برای تولید لایسنس جدید**
 @app.route('/generate_license', methods=['POST'])
 def generate_license_route():
@@ -49,7 +44,7 @@ def generate_license_route():
     # تولید لایسنس جدید
     new_license = generate_license()
     LICENSES[user_id] = new_license
-    save_licenses(LICENSES)
+    save_licenses(LICENSES)  # ذخیره اطلاعات جدید
 
     return jsonify({"status": "success", "license": new_license})
 
@@ -59,9 +54,12 @@ def check_license():
     data = request.get_json()
     license_key = data.get("key")
 
-    return "valid" if license_key in LICENSES.values() else "invalid"
+    # بارگیری لایسنس‌ها از فایل قبل از بررسی
+    licenses = load_licenses()
 
-# **📌 اجرای سرور روی پورت درست در Render**
+    return "valid" if license_key in licenses.values() else "invalid"
+
+# اجرای سرور روی پورت 5000
 if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 5000))  # دریافت پورت از متغیر محیطی
+    port = int(os.environ.get("PORT", 5000)) 
     app.run(host='0.0.0.0', port=port)
