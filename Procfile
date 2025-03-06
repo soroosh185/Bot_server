@@ -1,1 +1,1 @@
-web: python server.py
+web: gunicorn app:server --bind 0.0.0.0:5000 --workers 4
